@@ -4,11 +4,12 @@ import RootLayout from "@/component/shared/RootLayout";
 import TableHeader from "@/component/shared/TableHeader";
 import Modal from "@/component/shared/Modal";
 import { TPagination } from "@/types/pagination";
-import { Link, router, useForm } from "@inertiajs/react";
+import { router, useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit2 } from "react-icons/fi";
+import { LuEye } from "react-icons/lu";
+import { MdOutlineModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
-import { NoData, Pagination, SearchInput, Table, Tbody, Td, Tr, Input } from "notation-ui";
+import { ChoiceSelect, NoData, Pagination, SearchInput, Table, Tbody, Td, Tr, Input } from "notation-ui";
 
 type UserItem = {
     id: number;
@@ -80,6 +81,11 @@ export default function UsersIndex({
         });
     };
 
+    const tierOptions = [
+        { value: "", label: "All Tiers" },
+        ...tiers.map((t) => ({ value: t.name, label: t.name }))
+    ];
+
     return (
         <RootLayout>
             <PageHeader
@@ -89,19 +95,17 @@ export default function UsersIndex({
             />
 
             {/* Filter Bar */}
-            <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-t-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                    <select
-                        value={selectedTier}
-                        onChange={(e) => { setSelectedTier(e.target.value); setPage(1); }}
-                        className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 font-medium focus:outline-none"
-                    >
-                        <option value="">All Tiers</option>
-                        {tiers.map((t) => (
-                            <option key={t.id} value={t.name}>{t.name}</option>
-                        ))}
-                    </select>
-                </div>
+            <div className="flex flex-col gap-3 rounded-t-lg border-x border-t bg-foreground p-4 sm:flex-row justify-between sm:items-center">
+                <ChoiceSelect
+                    searchable={false}
+                    options={tierOptions}
+                    value={selectedTier}
+                    onChange={(value) => {
+                        setSelectedTier(String(value));
+                        setPage(1);
+                    }}
+                    className="w-full sm:w-[150px]! cursor-pointer"
+                />
 
                 <div className="w-full sm:w-72">
                     <SearchInput
@@ -118,68 +122,63 @@ export default function UsersIndex({
                     items={["User / Code", "Tier", "Available Balance", "Lifetime Earnings", "Referral Code", "Referred By", "Status", "Actions"]}
                 />
 
-                <Tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
+                <Tbody className="bg-white dark:bg-background">
                     {users.data.length > 0 ? (
                         users.data.map((user) => (
-                            <Tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <Tr key={user.id}>
                                 <Td>
                                     <div>
-                                        <p className="font-bold text-xs text-slate-900 dark:text-white">{user.name}</p>
-                                        <p className="text-[11px] text-slate-500 font-mono">{user.user_code || `ID: ${user.id}`}</p>
+                                        <p className="font-semibold text-xs">{user.name}</p>
+                                        <p className="text-[11px] text-gray-500 font-mono">{user.user_code || `ID: ${user.id}`}</p>
                                     </div>
                                 </Td>
                                 <Td>
-                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                        user.tier_level === 'Diamond' ? 'bg-purple-100 text-purple-700' :
-                                        user.tier_level === 'Platinum' ? 'bg-indigo-100 text-indigo-700' :
-                                        user.tier_level === 'Gold' ? 'bg-amber-100 text-amber-700' :
-                                        'bg-slate-100 text-slate-700'
-                                    }`}>
-                                        {user.tier_level}
-                                    </span>
+                                    <span className="font-semibold text-xs">{user.tier_level}</span>
                                 </Td>
-                                <Td className="font-bold text-xs text-emerald-600">
+                                <Td className="font-bold text-xs text-secondary">
                                     ৳ {user.available_balance.toFixed(2)}
                                 </Td>
-                                <Td className="text-xs text-slate-600 font-medium">
+                                <Td className="text-xs font-medium">
                                     ৳ {user.lifetime_earnings.toFixed(2)}
                                 </Td>
                                 <Td>
-                                    <span className="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                    <span className="font-mono text-xs bg-foreground border px-2 py-0.5 rounded-md">
                                         {user.referral_code || '—'}
                                     </span>
                                 </Td>
-                                <Td className="text-xs text-slate-500">
+                                <Td className="text-xs text-gray-500">
                                     {user.referrer ? (
                                         <span>{user.referrer.name}</span>
                                     ) : (
-                                        <span className="text-slate-400 italic">Direct</span>
+                                        <span className="text-gray-400 italic">Direct</span>
                                     )}
                                 </Td>
                                 <Td>
-                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                        user.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                                    }`}>
+                                    <span className={`text-xs font-semibold ${user.is_active ? 'text-green-600' : 'text-red-500'}`}>
                                         {user.is_active ? 'Active' : 'Suspended'}
                                     </span>
                                 </Td>
                                 <Td className="text-right">
-                                    <div className="flex items-center justify-end gap-1.5">
-                                        <Link
-                                            href={`/users/${user.id}`}
-                                            className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-600 hover:bg-slate-100 transition-colors"
-                                            title="View Member Hierarchy & Profile"
-                                        >
-                                            <FiEye className="text-base" />
-                                        </Link>
-                                        <button
-                                            onClick={() => handleOpenEdit(user)}
-                                            className="p-1.5 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                                            title="Quick Adjust Tier & Balance"
-                                        >
-                                            <FiEdit2 className="text-base" />
-                                        </button>
-                                    </div>
+                                    <ActionButton
+                                        items={[
+                                            {
+                                                Icon: LuEye,
+                                                label: 'View Profile',
+                                                className: 'text-blue-500! py-1',
+                                                onClick: () => {
+                                                    router.visit(`/users/${user.id}`);
+                                                },
+                                            },
+                                            {
+                                                Icon: MdOutlineModeEdit,
+                                                label: 'Adjust Tier/Balance',
+                                                className: 'text-green-500! py-1',
+                                                onClick: () => {
+                                                    handleOpenEdit(user);
+                                                },
+                                            },
+                                        ]}
+                                    />
                                 </Td>
                             </Tr>
                         ))
@@ -211,23 +210,16 @@ export default function UsersIndex({
                     saveText="Save Changes"
                 >
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Membership Tier
-                            </label>
-                            <select
-                                value={data.tier_level}
-                                onChange={(e) => setData('tier_level', e.target.value)}
-                                className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 font-medium focus:outline-none"
-                            >
-                                {tiers.map((t) => (
-                                    <option key={t.id} value={t.name}>{t.name}</option>
-                                ))}
-                            </select>
-                        </div>
+                        <ChoiceSelect
+                            label="Membership Tier"
+                            searchable={false}
+                            options={tiers.map((t) => ({ value: t.name, label: t.name }))}
+                            value={data.tier_level}
+                            onChange={(value) => setData('tier_level', String(value))}
+                        />
 
                         <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                            <label className="block text-xs font-semibold mb-1">
                                 Wallet Available Balance (৳)
                             </label>
                             <Input
@@ -244,9 +236,9 @@ export default function UsersIndex({
                                 id="is_active"
                                 checked={data.is_active}
                                 onChange={(e) => setData('is_active', e.target.checked)}
-                                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+                                className="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer"
                             />
-                            <label htmlFor="is_active" className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                            <label htmlFor="is_active" className="text-xs font-semibold cursor-pointer">
                                 Account Active & In Good Standing
                             </label>
                         </div>

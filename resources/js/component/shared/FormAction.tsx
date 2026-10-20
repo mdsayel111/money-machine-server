@@ -12,27 +12,17 @@ export default function FormAction({
     loading?: boolean;
 }) {
     return (
-        <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <Button
-                variant="danger"
-                styleType="outline"
-                size="sm"
-                onClick={handleCancel}
-                type="button"
-                className="cursor-pointer"
-            >
-                Cancel
-            </Button>
-            <Button
-                variant="success"
-                size="sm"
-                className="bg-[#00C076] hover:bg-[#009E60] text-white border-none cursor-pointer font-bold"
-                onClick={handleSave}
-                type="button"
-                disabled={loading}
-            >
-                {loading ? "Saving..." : saveText}
-            </Button>
+        <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-2">
+                <Button variant="danger" styleType="outline" onClick={handleCancel}>
+                    Cancel
+                </Button>
+            </div>
+            <div>
+                <Button variant="success" className="w-full" onClick={handleSave} disabled={loading}>
+                    {loading ? "Saving..." : saveText}
+                </Button>
+            </div>
         </div>
     );
 }

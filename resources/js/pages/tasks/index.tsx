@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
-import { Input, NoData, Pagination, SearchInput, Table, Tbody, Td, Tr } from "notation-ui";
+import { Badge, ChoiceSelect, Input, NoData, Pagination, SearchInput, Table, Tbody, Td, Tr } from "notation-ui";
 
 type TaskItem = {
     id: number;
@@ -48,9 +48,9 @@ export default function TasksIndex({
         platform: "youtube",
         category: "social",
         reward: 10,
-        reward_suffix: "/ Per task",
+        reward_suffix: "Instant Credit",
         time_estimate: "2 mins",
-        remaining_slots: "200+ left",
+        remaining_slots: "500 spots",
         limit_notice: "",
         description: "",
         action_url: "",
@@ -79,9 +79,9 @@ export default function TasksIndex({
             platform: task.platform,
             category: task.category,
             reward: task.reward,
-            reward_suffix: task.reward_suffix || "/ Per task",
+            reward_suffix: task.reward_suffix || "",
             time_estimate: task.time_estimate,
-            remaining_slots: task.remaining_slots || "200+ left",
+            remaining_slots: task.remaining_slots || "",
             limit_notice: task.limit_notice || "",
             description: task.description || "",
             action_url: task.action_url || "",
@@ -131,19 +131,19 @@ export default function TasksIndex({
     return (
         <RootLayout>
             <PageHeader
-                title="Task Marketplace"
+                title="Tasks Marketplace"
                 subtitle="Configure sponsored micro-tasks, review platforms, and manage reward payout limits."
                 buttons={[
                     <AddButton key="add" onClick={handleOpenCreate}>
-                        Add New Task
+                        Create Task
                     </AddButton>
                 ]}
                 hasBack={false}
             />
 
-            <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-t-xl flex justify-between items-center gap-3">
-                <span className="text-xs font-bold text-slate-500">
-                    Total Published: {tasks.total} tasks
+            <div className="bg-foreground p-4 border-x border-t rounded-t-lg flex justify-between items-center gap-3">
+                <span className="text-xs text-gray-500 font-medium">
+                    Total: {tasks.total} tasks
                 </span>
                 <div className="w-full sm:w-72">
                     <SearchInput
@@ -156,57 +156,55 @@ export default function TasksIndex({
 
             <Table tableStyle="border" className="mb-4">
                 <TableHeader
-                    items={["Task Title", "Platform", "Category", "Reward", "Time", "Slots", "Featured", "Status", "Actions"]}
+                    items={["Task Title", "Platform", "Category", "Reward", "Time", "Slots", "Featured", "Status", "Action"]}
                 />
 
-                <Tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
+                <Tbody className="bg-white dark:bg-background">
                     {tasks.data.length > 0 ? (
                         tasks.data.map((task) => (
-                            <Tr key={task.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <Tr key={task.id}>
                                 <Td>
                                     <div>
-                                        <p className="font-bold text-xs text-slate-900 dark:text-white">{task.title}</p>
+                                        <p className="font-semibold text-xs text-slate-900 dark:text-white">{task.title}</p>
                                         {task.limit_notice && (
-                                            <span className="text-[10px] text-amber-600 font-semibold bg-amber-50 px-1.5 py-0.5 rounded">
+                                            <span className="text-[10px] text-amber-600 font-medium">
                                                 {task.limit_notice}
                                             </span>
                                         )}
                                     </div>
                                 </Td>
                                 <Td>
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800">
+                                    <span className="text-xs uppercase font-medium text-gray-600 dark:text-gray-300">
                                         {task.platform}
                                     </span>
                                 </Td>
                                 <Td>
-                                    <span className="capitalize text-xs text-slate-600 font-medium">
+                                    <span className="capitalize text-xs text-gray-500">
                                         {task.category}
                                     </span>
                                 </Td>
-                                <Td className="font-bold text-xs text-emerald-600">
+                                <Td className="font-semibold text-xs text-emerald-600">
                                     ৳ {task.reward.toFixed(2)}
                                 </Td>
-                                <Td className="text-xs text-slate-500">
+                                <Td className="text-xs text-gray-500">
                                     {task.time_estimate}
                                 </Td>
-                                <Td className="text-xs text-slate-500">
+                                <Td className="text-xs text-gray-500">
                                     {task.remaining_slots}
                                 </Td>
                                 <Td>
                                     {task.is_featured ? (
-                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                                        <Badge variant="warning" styleType="soft">
                                             Featured
-                                        </span>
+                                        </Badge>
                                     ) : (
-                                        <span className="text-[11px] text-slate-400">—</span>
+                                        <span className="text-[11px] text-gray-400">—</span>
                                     )}
                                 </Td>
                                 <Td>
-                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                        task.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-600'
-                                    }`}>
+                                    <Badge variant={task.is_active ? 'success' : 'danger'} styleType="soft">
                                         {task.is_active ? 'Active' : 'Disabled'}
-                                    </span>
+                                    </Badge>
                                 </Td>
                                 <Td className="text-right">
                                     <ActionButton
@@ -214,15 +212,15 @@ export default function TasksIndex({
                                             {
                                                 Icon: MdOutlineModeEdit,
                                                 label: "Edit",
-                                                className: "text-blue-600!",
+                                                className: "text-blue-500! py-1",
                                                 onClick: () => handleOpenEdit(task),
                                             },
                                             {
                                                 Icon: AiOutlineDelete,
                                                 label: "Delete",
-                                                className: "text-red-600!",
+                                                className: "text-red-500! py-1",
                                                 onClick: () => handleDelete(task.id),
-                                            }
+                                            },
                                         ]}
                                     />
                                 </Td>
@@ -250,9 +248,8 @@ export default function TasksIndex({
                 onClose={() => setModalOpen(false)}
                 title={`${editId ? "Edit" : "Create"} Task`}
                 onSave={handleSave}
-                loading={processing}
             >
-                <div className="space-y-3.5">
+                <div className="space-y-4">
                     <Input
                         label="Task Title"
                         value={data.title}
@@ -261,38 +258,32 @@ export default function TasksIndex({
                     />
 
                     <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Platform
-                            </label>
-                            <select
-                                value={data.platform}
-                                onChange={(e) => setData('platform', e.target.value)}
-                                className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 font-medium"
-                            >
-                                <option value="youtube">YouTube</option>
-                                <option value="facebook">Facebook</option>
-                                <option value="app">App Review</option>
-                                <option value="tiktok">TikTok</option>
-                                <option value="survey">Survey</option>
-                            </select>
-                        </div>
+                        <ChoiceSelect
+                            label="Platform"
+                            searchable={false}
+                            options={[
+                                { value: "youtube", label: "YouTube" },
+                                { value: "facebook", label: "Facebook" },
+                                { value: "app", label: "App Review" },
+                                { value: "tiktok", label: "TikTok" },
+                                { value: "survey", label: "Survey" },
+                            ]}
+                            value={data.platform}
+                            onChange={(val) => setData('platform', String(val))}
+                        />
 
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Category
-                            </label>
-                            <select
-                                value={data.category}
-                                onChange={(e) => setData('category', e.target.value)}
-                                className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 font-medium"
-                            >
-                                <option value="social">Social Media</option>
-                                <option value="app">App Download</option>
-                                <option value="survey">Paid Survey</option>
-                                <option value="all">General</option>
-                            </select>
-                        </div>
+                        <ChoiceSelect
+                            label="Category"
+                            searchable={false}
+                            options={[
+                                { value: "social", label: "Social Media" },
+                                { value: "app", label: "App Download" },
+                                { value: "survey", label: "Paid Survey" },
+                                { value: "all", label: "General" },
+                            ]}
+                            value={data.category}
+                            onChange={(val) => setData('category', String(val))}
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
@@ -322,7 +313,7 @@ export default function TasksIndex({
                             label="Limit Notice Badge"
                             value={data.limit_notice}
                             onChange={(e) => setData('limit_notice', e.target.value)}
-                            placeholder="e.g. Limit: 5/day or Bonus: 1.5x"
+                            placeholder="e.g. Limit: 5/day"
                         />
                     </div>
 
@@ -334,35 +325,35 @@ export default function TasksIndex({
                     />
 
                     <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Instructions / Description
                         </label>
                         <textarea
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             rows={3}
-                            className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-medium focus:outline-none"
+                            className="w-full text-xs bg-foreground border p-3 rounded-md font-medium focus:outline-none"
                             placeholder="Detailed instructions for the user..."
                         />
                     </div>
 
                     <div className="flex items-center gap-6 pt-2">
-                        <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                        <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
                             <input
                                 type="checkbox"
                                 checked={data.is_featured}
                                 onChange={(e) => setData('is_featured', e.target.checked)}
-                                className="w-4 h-4 text-emerald-600 rounded"
+                                className="w-4 h-4 rounded text-secondary"
                             />
                             Feature on Home Screen
                         </label>
 
-                        <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                        <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
                             <input
                                 type="checkbox"
                                 checked={data.is_active}
                                 onChange={(e) => setData('is_active', e.target.checked)}
-                                className="w-4 h-4 text-emerald-600 rounded"
+                                className="w-4 h-4 rounded text-secondary"
                             />
                             Active & Open for Submissions
                         </label>

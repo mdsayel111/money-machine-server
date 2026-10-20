@@ -13,30 +13,28 @@ export default function PageHeader({
     hasBack?: boolean;
 }) {
     return (
-        <div className="bg-foreground border border-slate-200 dark:border-slate-800 p-5 rounded-xl mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-4">
+        <div className="bg-foreground border p-4 rounded-md mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-5">
                 {hasBack && (
                     <button
                         onClick={() => window.history.back()}
-                        className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-secondary transition-all cursor-pointer"
+                        className="text-2xl cursor-pointer"
                         title="Go back"
                     >
-                        <BiArrowBack className="text-2xl" />
+                        <BiArrowBack className="text-secondary" />
                     </button>
                 )}
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                        {title}
-                    </h1>
+                    <h1 className="text-3xl font-semibold">{title}</h1>
                     {subtitle && (
-                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             {subtitle}
                         </p>
                     )}
                 </div>
             </div>
-            {buttons && buttons.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
+            {buttons && (
+                <div className="flex items-center gap-2">
                     {buttons.map((button, index) => (
                         <React.Fragment key={index}>
                             {button}

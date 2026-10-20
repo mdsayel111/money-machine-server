@@ -6,8 +6,7 @@ import { TPagination } from "@/types/pagination";
 import { router, useForm } from "@inertiajs/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { NoData, Pagination, Table, Tbody, Td, Tr, Button } from "notation-ui";
-import { MdCheckCircle, MdCancel } from "react-icons/md";
+import { Badge, Button, NoData, Pagination, Table, Tbody, Td, Tr } from "notation-ui";
 
 type SubmissionItem = {
     id: number;
@@ -72,74 +71,74 @@ export default function SubmissionsIndex({
                 hasBack={false}
             />
 
-            {/* Filter Pills */}
-            <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-t-xl flex items-center gap-2 overflow-x-auto">
-                <button
+            {/* Filter Buttons */}
+            <div className="bg-foreground p-4 border-x border-t rounded-t-lg flex items-center gap-2 overflow-x-auto">
+                <Button
+                    variant={!currentStatus ? 'primary' : 'secondary'}
+                    styleType={!currentStatus ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        !currentStatus ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     All Proofs
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant={currentStatus === 'pending' ? 'primary' : 'secondary'}
+                    styleType={currentStatus === 'pending' ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("pending")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        currentStatus === 'pending' ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     Pending Review
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant={currentStatus === 'approved' ? 'primary' : 'secondary'}
+                    styleType={currentStatus === 'approved' ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("approved")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        currentStatus === 'approved' ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     Approved
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant={currentStatus === 'rejected' ? 'primary' : 'secondary'}
+                    styleType={currentStatus === 'rejected' ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("rejected")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        currentStatus === 'rejected' ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     Rejected
-                </button>
+                </Button>
             </div>
 
             {/* Submissions Table */}
             <Table tableStyle="border" className="mb-4">
                 <TableHeader
-                    items={["Member", "Task", "Platform", "Reward", "Submitted Proof", "Status", "Actions"]}
+                    items={["Member", "Task", "Platform", "Reward", "Submitted Proof", "Status", "Action"]}
                 />
 
-                <Tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
+                <Tbody className="bg-white dark:bg-background">
                     {submissions.data.length > 0 ? (
                         submissions.data.map((sub) => (
-                            <Tr key={sub.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <Tr key={sub.id}>
                                 <Td>
                                     <div>
-                                        <p className="font-bold text-xs text-slate-900 dark:text-white">{sub.user?.name}</p>
-                                        <p className="text-[11px] text-slate-500 font-mono">{sub.user?.user_code}</p>
+                                        <p className="font-semibold text-xs text-slate-900 dark:text-white">{sub.user?.name}</p>
+                                        <p className="text-[11px] text-gray-500 font-mono">{sub.user?.user_code}</p>
                                     </div>
                                 </Td>
                                 <Td>
-                                    <p className="font-semibold text-xs text-slate-800 dark:text-slate-200">
+                                    <p className="font-medium text-xs text-slate-800 dark:text-slate-200">
                                         {sub.task?.title || 'Micro Task'}
                                     </p>
                                 </Td>
                                 <Td>
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800">
+                                    <span className="text-xs uppercase font-medium text-gray-500">
                                         {sub.task?.platform || 'Social'}
                                     </span>
                                 </Td>
-                                <Td className="font-bold text-xs text-emerald-600">
+                                <Td className="font-semibold text-xs text-emerald-600">
                                     ৳ {sub.reward_amount.toFixed(2)}
                                 </Td>
                                 <Td>
                                     <div className="max-w-xs">
-                                        <p className="text-xs text-slate-700 dark:text-slate-300 break-words">
+                                        <p className="text-xs text-gray-700 dark:text-gray-300 break-words">
                                             {sub.proof_text || 'Completed'}
                                         </p>
                                         {sub.proof_image && (
@@ -147,7 +146,7 @@ export default function SubmissionsIndex({
                                                 href={sub.proof_image}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="text-[10px] text-blue-600 font-bold hover:underline block mt-0.5"
+                                                className="text-[10px] text-blue-500 font-medium hover:underline block mt-0.5"
                                             >
                                                 View Attached Proof Image ↗
                                             </a>
@@ -155,37 +154,41 @@ export default function SubmissionsIndex({
                                     </div>
                                 </Td>
                                 <Td>
-                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                                        sub.status === 'approved' ? 'bg-emerald-100 text-emerald-700' :
-                                        sub.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                        'bg-amber-100 text-amber-700'
-                                    }`}>
+                                    <Badge
+                                        variant={sub.status === 'approved' ? 'success' : sub.status === 'rejected' ? 'danger' : 'warning'}
+                                        styleType="soft"
+                                    >
                                         {sub.status}
-                                    </span>
+                                    </Badge>
                                     {sub.admin_notes && (
-                                        <p className="text-[10px] text-slate-400 mt-0.5 italic">{sub.admin_notes}</p>
+                                        <p className="text-[10px] text-gray-400 mt-0.5 italic">{sub.admin_notes}</p>
                                     )}
                                 </Td>
                                 <Td className="text-right">
                                     {sub.status === 'pending' ? (
-                                        <div className="flex items-center justify-end gap-1.5">
-                                            <button
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button
+                                                variant="success"
+                                                size="sm"
+                                                styleType="outline"
                                                 onClick={() => handleApprove(sub.id)}
-                                                className="px-2.5 py-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm cursor-pointer transition-all"
-                                                title="Approve & Credit Balance"
                                             >
                                                 Approve
-                                            </button>
-                                            <button
-                                                onClick={() => { setRejectingId(sub.id); setData('admin_notes', 'Proof does not match requirements'); }}
-                                                className="px-2.5 py-1 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm cursor-pointer transition-all"
-                                                title="Reject Submission"
+                                            </Button>
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                styleType="outline"
+                                                onClick={() => {
+                                                    setRejectingId(sub.id);
+                                                    setData('admin_notes', 'Proof does not match requirements');
+                                                }}
                                             >
                                                 Reject
-                                            </button>
+                                            </Button>
                                         </div>
                                     ) : (
-                                        <span className="text-[11px] text-slate-400">Processed</span>
+                                        <span className="text-xs text-gray-400">Processed</span>
                                     )}
                                 </Td>
                             </Tr>
@@ -200,41 +203,33 @@ export default function SubmissionsIndex({
                 <Pagination
                     currentPage={submissions.current_page}
                     totalPages={submissions.last_page}
-                    onPageChange={(p) => router.get('/submissions', { page: p, status: currentStatus }, { preserveState: true })}
+                    onPageChange={setPage}
                     showInfo
                     size="sm"
                 />
             </div>
 
-            {/* Reject Modal */}
-            {rejectingId && (
-                <Modal
-                    open={Boolean(rejectingId)}
-                    onClose={() => setRejectingId(null)}
-                    title="Reject Task Submission"
-                    onSave={handleReject}
-                    loading={processing}
-                    saveText="Confirm Rejection"
-                >
-                    <div className="space-y-3">
-                        <p className="text-xs text-slate-500">
-                            Please provide a reason for rejecting this submission. The user's pending reward will be released.
-                        </p>
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Rejection Reason / Note
-                            </label>
-                            <textarea
-                                value={data.admin_notes}
-                                onChange={(e) => setData('admin_notes', e.target.value)}
-                                rows={3}
-                                className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-medium focus:outline-none"
-                                placeholder="Explain why this proof was rejected..."
-                            />
-                        </div>
-                    </div>
-                </Modal>
-            )}
+            {/* Rejection Modal */}
+            <Modal
+                open={rejectingId !== null}
+                onClose={() => setRejectingId(null)}
+                title="Reject Task Submission"
+                onSave={handleReject}
+                saveText="Confirm Rejection"
+            >
+                <div className="space-y-3">
+                    <p className="text-xs text-gray-500">
+                        Please provide a reason for rejection. This explanation will be visible to the user in their task activity ledger.
+                    </p>
+                    <textarea
+                        value={data.admin_notes}
+                        onChange={(e) => setData('admin_notes', e.target.value)}
+                        rows={3}
+                        className="w-full text-xs bg-foreground border p-3 rounded-md font-medium focus:outline-none"
+                        placeholder="Reason for rejecting submission..."
+                    />
+                </div>
+            </Modal>
         </RootLayout>
     );
 }

@@ -4,7 +4,7 @@ import Modal from "@/component/shared/Modal";
 import { useForm } from "@inertiajs/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Input } from "notation-ui";
+import { Button, Input } from "notation-ui";
 import { FiEdit3 } from "react-icons/fi";
 
 type MembershipTier = {
@@ -72,71 +72,67 @@ export default function TiersIndex({ tiers }: { tiers: MembershipTier[] }) {
                 hasBack={false}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {tiers.map((tier) => (
                     <div
                         key={tier.id}
-                        className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden"
+                        className="bg-foreground border rounded-md p-5 flex flex-col justify-between"
                     >
                         <div>
                             <div className="flex items-center justify-between">
-                                <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+                                <span className="text-xs font-bold text-secondary uppercase tracking-wider">
                                     {tier.name}
                                 </span>
-                                <button
-                                    onClick={() => handleOpenEdit(tier)}
-                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer transition-all"
-                                    title="Edit Tier Parameters"
-                                >
-                                    <FiEdit3 className="text-base" />
-                                </button>
                             </div>
 
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-4">
+                            <h3 className="text-2xl font-bold mt-3">
                                 {tier.price_text}
                             </h3>
-                            <p className="text-xs text-slate-500 font-medium">{tier.subtitle}</p>
+                            <p className="text-xs text-gray-500 font-medium mt-1">{tier.subtitle}</p>
 
-                            <div className="mt-5 space-y-2.5 text-xs text-slate-600 dark:text-slate-300 divide-y divide-slate-100 dark:divide-slate-800">
+                            <div className="mt-5 space-y-2.5 text-xs divide-y divide-border-color">
                                 <div className="pt-2 flex justify-between">
-                                    <span className="text-slate-400">Daily Tasks Limit:</span>
-                                    <span className="font-bold text-slate-900 dark:text-white">
+                                    <span className="text-gray-500">Daily Tasks Limit:</span>
+                                    <span className="font-semibold">
                                         {tier.daily_tasks_limit === -1 ? 'Unlimited' : `${tier.daily_tasks_limit} / day`}
                                     </span>
                                 </div>
                                 <div className="pt-2 flex justify-between">
-                                    <span className="text-slate-400">Referral Commission:</span>
-                                    <span className="font-bold text-emerald-600">
+                                    <span className="text-gray-500">Referral Commission:</span>
+                                    <span className="font-bold text-secondary">
                                         {tier.referral_commission_rate}%
                                     </span>
                                 </div>
                                 <div className="pt-2 flex justify-between">
-                                    <span className="text-slate-400">Withdrawal Fee:</span>
-                                    <span className="font-bold text-slate-900 dark:text-white">
+                                    <span className="text-gray-500">Withdrawal Fee:</span>
+                                    <span className="font-semibold">
                                         {tier.withdrawal_fee_percent}%
                                     </span>
                                 </div>
                                 <div className="pt-2 flex justify-between">
-                                    <span className="text-slate-400">Instant Cashout:</span>
-                                    <span className={`font-bold ${tier.instant_payouts ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                    <span className="text-gray-500">Instant Cashout:</span>
+                                    <span className={`font-semibold ${tier.instant_payouts ? 'text-secondary' : 'text-gray-400'}`}>
                                         {tier.instant_payouts ? 'Enabled' : 'Standard'}
                                     </span>
                                 </div>
                                 <div className="pt-2 flex justify-between">
-                                    <span className="text-slate-400">Enrolled Users:</span>
-                                    <span className="font-bold text-indigo-600">
+                                    <span className="text-gray-500">Enrolled Users:</span>
+                                    <span className="font-semibold text-blue-500">
                                         {tier.users_count || 0} Members
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <button
+                        <Button
+                            variant="primary"
+                            styleType="outline"
                             onClick={() => handleOpenEdit(tier)}
-                            className="mt-6 w-full py-2.5 text-xs font-bold rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 cursor-pointer transition-all border border-slate-200 dark:border-slate-700"
+                            className="mt-6 w-full flex items-center justify-center gap-2"
                         >
+                            <FiEdit3 />
                             Configure Parameters
-                        </button>
+                        </Button>
                     </div>
                 ))}
             </div>
@@ -196,22 +192,22 @@ export default function TiersIndex({ tiers }: { tiers: MembershipTier[] }) {
                         </div>
 
                         <div className="flex items-center gap-6 pt-2">
-                            <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                            <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={data.instant_payouts}
                                     onChange={(e) => setData('instant_payouts', e.target.checked)}
-                                    className="w-4 h-4 text-emerald-600 rounded"
+                                    className="w-4 h-4 text-secondary rounded cursor-pointer"
                                 />
                                 Instant Payouts Privilege
                             </label>
 
-                            <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                            <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={data.vip_support}
                                     onChange={(e) => setData('vip_support', e.target.checked)}
-                                    className="w-4 h-4 text-emerald-600 rounded"
+                                    className="w-4 h-4 text-secondary rounded cursor-pointer"
                                 />
                                 Priority VIP Support
                             </label>

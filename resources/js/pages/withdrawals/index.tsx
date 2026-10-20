@@ -6,7 +6,7 @@ import { TPagination } from "@/types/pagination";
 import { router, useForm } from "@inertiajs/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { NoData, Pagination, Table, Tbody, Td, Tr, Input } from "notation-ui";
+import { Badge, Button, Input, NoData, Pagination, Table, Tbody, Td, Tr } from "notation-ui";
 
 type WithdrawalItem = {
     id: number;
@@ -79,110 +79,114 @@ export default function WithdrawalsIndex({
                 hasBack={false}
             />
 
-            {/* Filter Pills */}
-            <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-t-xl flex items-center gap-2 overflow-x-auto">
-                <button
+            {/* Filter Buttons */}
+            <div className="bg-foreground p-4 border-x border-t rounded-t-lg flex items-center gap-2 overflow-x-auto">
+                <Button
+                    variant={!currentStatus ? 'primary' : 'secondary'}
+                    styleType={!currentStatus ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        !currentStatus ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     All Payouts
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant={currentStatus === 'pending' ? 'primary' : 'secondary'}
+                    styleType={currentStatus === 'pending' ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("pending")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        currentStatus === 'pending' ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     Pending Queue
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant={currentStatus === 'completed' ? 'primary' : 'secondary'}
+                    styleType={currentStatus === 'completed' ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("completed")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        currentStatus === 'completed' ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     Completed
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant={currentStatus === 'rejected' ? 'primary' : 'secondary'}
+                    styleType={currentStatus === 'rejected' ? 'solid' : 'outline'}
+                    size="sm"
                     onClick={() => handleFilterStatus("rejected")}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        currentStatus === 'rejected' ? 'bg-[#00C076] text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
                 >
                     Rejected / Refunded
-                </button>
+                </Button>
             </div>
 
             {/* Table */}
             <Table tableStyle="border" className="mb-4">
                 <TableHeader
-                    items={["Member", "Method", "Account Number", "Gross", "Fee", "Net Payable", "Status", "Reference", "Actions"]}
+                    items={["Member", "Method", "Account Number", "Gross", "Fee", "Net Payable", "Status", "Reference", "Action"]}
                 />
 
-                <Tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
+                <Tbody className="bg-white dark:bg-background">
                     {withdrawals.data.length > 0 ? (
                         withdrawals.data.map((w) => (
-                            <Tr key={w.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <Tr key={w.id}>
                                 <Td>
                                     <div>
-                                        <p className="font-bold text-xs text-slate-900 dark:text-white">{w.user?.name}</p>
-                                        <p className="text-[11px] text-slate-500 font-mono">{w.user?.user_code}</p>
+                                        <p className="font-semibold text-xs text-slate-900 dark:text-white">{w.user?.name}</p>
+                                        <p className="text-[11px] text-gray-500 font-mono">{w.user?.user_code}</p>
                                     </div>
                                 </Td>
                                 <Td>
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-purple-50 text-purple-700 border border-purple-100">
+                                    <span className="text-xs uppercase font-medium text-gray-700 dark:text-gray-300">
                                         {w.payout_type}
                                     </span>
                                 </Td>
-                                <Td className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
+                                <Td className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
                                     {w.account_number}
                                 </Td>
-                                <Td className="text-xs text-slate-600 font-semibold">
+                                <Td className="text-xs text-gray-600 font-medium">
                                     ৳ {w.amount.toFixed(2)}
                                 </Td>
-                                <Td className="text-xs text-red-500 font-semibold">
+                                <Td className="text-xs text-red-500 font-medium">
                                     - ৳ {w.fee.toFixed(2)}
                                 </Td>
-                                <Td className="font-black text-xs text-emerald-600">
+                                <Td className="font-semibold text-xs text-emerald-600">
                                     ৳ {w.net_amount.toFixed(2)}
                                 </Td>
                                 <Td>
-                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                                        w.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                                        w.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                        'bg-purple-100 text-purple-700'
-                                    }`}>
+                                    <Badge
+                                        variant={w.status === 'completed' ? 'success' : w.status === 'rejected' ? 'danger' : 'warning'}
+                                        styleType="soft"
+                                    >
                                         {w.status}
-                                    </span>
+                                    </Badge>
                                 </Td>
-                                <Td className="font-mono text-[11px] text-slate-500">
+                                <Td className="font-mono text-[11px] text-gray-500">
                                     {w.transaction_reference || '—'}
                                 </Td>
                                 <Td className="text-right">
-                                    {w.status === 'pending' || w.status === 'processing' ? (
-                                        <div className="flex items-center justify-end gap-1.5">
-                                            <button
+                                    {w.status === 'pending' ? (
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button
+                                                variant="primary"
+                                                size="sm"
+                                                styleType="outline"
                                                 onClick={() => {
                                                     setCompletingId(w.id);
                                                     completeForm.setData('transaction_reference', `${w.payout_type.toUpperCase()}-${Date.now().toString().slice(-6)}`);
                                                 }}
-                                                className="px-2.5 py-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm cursor-pointer transition-all"
-                                                title="Mark as Disbursed"
                                             >
                                                 Disburse
-                                            </button>
-                                            <button
-                                                onClick={() => setRejectingId(w.id)}
-                                                className="px-2.5 py-1 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm cursor-pointer transition-all"
-                                                title="Reject & Refund Member Balance"
+                                            </Button>
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                styleType="outline"
+                                                onClick={() => {
+                                                    setRejectingId(w.id);
+                                                    rejectForm.setData('admin_notes', 'Invalid account number');
+                                                }}
                                             >
                                                 Reject
-                                            </button>
+                                            </Button>
                                         </div>
                                     ) : (
-                                        <span className="text-[11px] text-slate-400">Archived</span>
+                                        <span className="text-xs text-gray-400">Processed</span>
                                     )}
                                 </Td>
                             </Tr>
@@ -197,71 +201,59 @@ export default function WithdrawalsIndex({
                 <Pagination
                     currentPage={withdrawals.current_page}
                     totalPages={withdrawals.last_page}
-                    onPageChange={(p) => router.get('/withdrawals', { page: p, status: currentStatus }, { preserveState: true })}
+                    onPageChange={(page) => router.get('/withdrawals', { page, status: currentStatus || undefined })}
                     showInfo
                     size="sm"
                 />
             </div>
 
-            {/* Complete Disbursement Modal */}
-            {completingId && (
-                <Modal
-                    open={Boolean(completingId)}
-                    onClose={() => setCompletingId(null)}
-                    title="Confirm Cashout Disbursement"
-                    onSave={handleConfirmComplete}
-                    loading={completeForm.processing}
-                    saveText="Confirm Disbursed"
-                >
-                    <div className="space-y-3.5">
-                        <Input
-                            label="Transaction Reference / TrxID"
-                            value={completeForm.data.transaction_reference}
-                            onChange={(e) => completeForm.setData('transaction_reference', e.target.value)}
-                            placeholder="e.g. 9J28DA1092"
-                        />
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Disbursement Note
-                            </label>
-                            <Input
-                                value={completeForm.data.admin_notes}
-                                onChange={(e) => completeForm.setData('admin_notes', e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </Modal>
-            )}
+            {/* Complete Payout Modal */}
+            <Modal
+                open={completingId !== null}
+                onClose={() => setCompletingId(null)}
+                title="Mark Withdrawal as Disbursed"
+                onSave={handleConfirmComplete}
+                saveText="Confirm Disbursal"
+            >
+                <div className="space-y-3">
+                    <p className="text-xs text-gray-500">
+                        Enter the transaction ID or merchant disbursement reference received from your payment gateway.
+                    </p>
+                    <Input
+                        label="Gateway Transaction ID / TrxID"
+                        value={completeForm.data.transaction_reference}
+                        onChange={(e) => completeForm.setData('transaction_reference', e.target.value)}
+                        placeholder="e.g. BKASH-89X7712 or NAGAD-1234"
+                    />
+                    <Input
+                        label="Disbursement Notes"
+                        value={completeForm.data.admin_notes}
+                        onChange={(e) => completeForm.setData('admin_notes', e.target.value)}
+                        placeholder="Disbursed via merchant..."
+                    />
+                </div>
+            </Modal>
 
-            {/* Reject & Refund Modal */}
-            {rejectingId && (
-                <Modal
-                    open={Boolean(rejectingId)}
-                    onClose={() => setRejectingId(null)}
-                    title="Reject Withdrawal & Refund Balance"
-                    onSave={handleConfirmReject}
-                    loading={rejectForm.processing}
-                    saveText="Reject & Refund"
-                >
-                    <div className="space-y-3">
-                        <p className="text-xs text-slate-500">
-                            Rejecting this withdrawal will immediately refund the gross amount back into the member's wallet.
-                        </p>
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Rejection Reason
-                            </label>
-                            <textarea
-                                value={rejectForm.data.admin_notes}
-                                onChange={(e) => rejectForm.setData('admin_notes', e.target.value)}
-                                rows={3}
-                                className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-medium focus:outline-none"
-                                placeholder="Explain why payout was rejected..."
-                            />
-                        </div>
-                    </div>
-                </Modal>
-            )}
+            {/* Reject & Refund Payout Modal */}
+            <Modal
+                open={rejectingId !== null}
+                onClose={() => setRejectingId(null)}
+                title="Reject Withdrawal & Refund Funds"
+                onSave={handleConfirmReject}
+                saveText="Confirm Refund"
+            >
+                <div className="space-y-3">
+                    <p className="text-xs text-gray-500">
+                        Rejecting this cashout will automatically credit the requested amount back to the member's wallet balance.
+                    </p>
+                    <Input
+                        label="Reason for Rejection"
+                        value={rejectForm.data.admin_notes}
+                        onChange={(e) => rejectForm.setData('admin_notes', e.target.value)}
+                        placeholder="e.g. Account not registered or personal limit exceeded..."
+                    />
+                </div>
+            </Modal>
         </RootLayout>
     );
 }

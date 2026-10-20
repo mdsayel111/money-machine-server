@@ -4,7 +4,7 @@ import TableHeader from "@/component/shared/TableHeader";
 import { TPagination } from "@/types/pagination";
 import { router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
-import { NoData, Pagination, SearchInput, Table, Tbody, Td, Tr } from "notation-ui";
+import { ChoiceSelect, NoData, Pagination, SearchInput, Table, Tbody, Td, Tr } from "notation-ui";
 
 type TransactionItem = {
     id: number;
@@ -17,6 +17,14 @@ type TransactionItem = {
     created_at: string;
     user?: { id: number; name: string; user_code: string; email: string };
 };
+
+const typeOptions = [
+    { value: "", label: "All Types" },
+    { value: "task", label: "Task Rewards" },
+    { value: "referral", label: "Referral Commissions" },
+    { value: "withdrawal", label: "Withdrawals" },
+    { value: "bonus", label: "Network Bonuses" },
+];
 
 export default function TransactionsIndex({
     transactions,
@@ -45,20 +53,17 @@ export default function TransactionsIndex({
                 hasBack={false}
             />
 
-            <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-t-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                    <select
-                        value={selectedType}
-                        onChange={(e) => { setSelectedType(e.target.value); setPage(1); }}
-                        className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 font-medium focus:outline-none"
-                    >
-                        <option value="">All Types</option>
-                        <option value="task">Task Rewards</option>
-                        <option value="referral">Referral Commissions</option>
-                        <option value="withdrawal">Withdrawals</option>
-                        <option value="bonus">Network Bonuses</option>
-                    </select>
-                </div>
+            <div className="flex flex-col gap-3 rounded-t-lg border-x border-t bg-foreground p-4 sm:flex-row justify-between sm:items-center">
+                <ChoiceSelect
+                    searchable={false}
+                    options={typeOptions}
+                    value={selectedType}
+                    onChange={(value) => {
+                        setSelectedType(String(value));
+                        setPage(1);
+                    }}
+                    className="w-full sm:w-[180px]! cursor-pointer"
+                />
 
                 <div className="w-full sm:w-72">
                     <SearchInput
@@ -74,48 +79,43 @@ export default function TransactionsIndex({
                     items={["Transaction ID", "Member", "Title / Note", "Type", "Amount", "Status", "Date"]}
                 />
 
-                <Tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
+                <Tbody className="bg-white dark:bg-background">
                     {transactions.data.length > 0 ? (
                         transactions.data.map((tx) => (
-                            <Tr key={tx.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                <Td className="font-mono text-xs text-slate-500">
+                            <Tr key={tx.id}>
+                                <Td className="font-mono text-xs text-gray-500">
                                     #TXN-{tx.id.toString().padStart(5, '0')}
                                 </Td>
                                 <Td>
                                     <div>
-                                        <p className="font-bold text-xs text-slate-900 dark:text-white">{tx.user?.name || 'Member'}</p>
-                                        <p className="text-[11px] text-slate-500 font-mono">{tx.user?.user_code}</p>
+                                        <p className="font-semibold text-xs">{tx.user?.name || 'Member'}</p>
+                                        <p className="text-[11px] text-gray-400 font-mono">{tx.user?.user_code}</p>
                                     </div>
                                 </Td>
                                 <Td>
-                                    <p className="text-xs font-semibold text-slate-900 dark:text-white">{tx.title}</p>
+                                    <p className="text-xs font-semibold">{tx.title}</p>
                                     {tx.subtitle && (
-                                        <p className="text-[11px] text-slate-400">{tx.subtitle}</p>
+                                        <p className="text-[11px] text-gray-400">{tx.subtitle}</p>
                                     )}
                                 </Td>
                                 <Td>
-                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                        tx.type === 'referral' ? 'bg-blue-100 text-blue-700' :
-                                        tx.type === 'task' ? 'bg-emerald-100 text-emerald-700' :
-                                        tx.type === 'withdrawal' ? 'bg-purple-100 text-purple-700' :
-                                        'bg-amber-100 text-amber-700'
-                                    }`}>
+                                    <span className="text-xs font-semibold capitalize">
                                         {tx.type}
                                     </span>
                                 </Td>
                                 <Td>
-                                    <span className={`font-black text-xs ${
-                                        tx.is_positive ? 'text-emerald-600' : 'text-slate-900 dark:text-white'
+                                    <span className={`font-bold text-xs ${
+                                        tx.is_positive ? 'text-secondary' : ''
                                     }`}>
                                         {tx.is_positive ? '+ ' : '- '} ৳ {tx.amount.toFixed(2)}
                                     </span>
                                 </Td>
                                 <Td>
-                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                    <span className="text-xs font-semibold text-green-600 capitalize">
                                         {tx.status}
                                     </span>
                                 </Td>
-                                <Td className="text-xs text-slate-500">
+                                <Td className="text-xs text-gray-500">
                                     {new Date(tx.created_at).toLocaleDateString('en-US', {
                                         month: 'short',
                                         day: 'numeric',

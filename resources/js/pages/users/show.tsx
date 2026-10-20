@@ -1,10 +1,11 @@
 import PageHeader from "@/component/shared/PageHeader";
 import RootLayout from "@/component/shared/RootLayout";
-import { Link } from "@inertiajs/react";
-import { Table, Tbody, Td, Th, Thead, Tr } from "notation-ui";
+import StatCard from "@/component/shared/StatCard";
+import TableHeader from "@/component/shared/TableHeader";
+import { router } from "@inertiajs/react";
+import { Button, Table, Tbody, Td, Tr, NoData } from "notation-ui";
 import { HiOutlineUserGroup, HiOutlineCurrencyDollar } from "react-icons/hi2";
-import { FaRegFolderOpen } from "react-icons/fa";
-import { MdOutlineAccountBalanceWallet } from "react-icons/md";
+import { MdOutlineAccountBalanceWallet, MdOutlineStars } from "react-icons/md";
 
 type UserDetailProps = {
     user: {
@@ -62,97 +63,80 @@ export default function UserShow({ user }: UserDetailProps) {
                 hasBack={true}
             />
 
-            {/* Top Overview Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Available Balance</span>
-                    <h3 className="text-2xl font-black text-emerald-600 mt-2">
-                        ৳ {user.available_balance.toFixed(2)}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1">Pending: ৳ {user.pending_rewards.toFixed(2)}</p>
-                </div>
+            {/* Top Overview Stat Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <StatCard
+                    Icon={MdOutlineAccountBalanceWallet}
+                    value={`৳ ${user.available_balance.toFixed(2)}`}
+                    label="Available Balance"
+                    iconClassName="bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"
+                />
 
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Membership Tier</span>
-                    <div className="mt-2 flex items-center gap-2">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800">
-                            {user.tier_level}
-                        </span>
-                        <span className="text-xs text-slate-500">Level {user.level} ({user.level_progress}%)</span>
-                    </div>
-                </div>
+                <StatCard
+                    Icon={MdOutlineStars}
+                    value={user.tier_level}
+                    label="Membership Tier"
+                    iconClassName="bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400"
+                />
 
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Direct Referrals (L1)</span>
-                    <h3 className="text-2xl font-black text-indigo-600 mt-2">
-                        {user.direct_referrals.length}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1">Ref Code: {user.referral_code}</p>
-                </div>
+                <StatCard
+                    Icon={HiOutlineUserGroup}
+                    value={user.direct_referrals.length}
+                    label="Direct Referrals (L1)"
+                    iconClassName="bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
+                />
 
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Lifetime Earnings</span>
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-2">
-                        ৳ {user.lifetime_earnings.toFixed(2)}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1">Sponsor: {user.referrer ? user.referrer.name : 'Direct Root'}</p>
-                </div>
+                <StatCard
+                    Icon={HiOutlineCurrencyDollar}
+                    value={`৳ ${user.lifetime_earnings.toFixed(2)}`}
+                    label="Lifetime Earnings"
+                    iconClassName="bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
+                />
             </div>
 
             {/* Direct Referrals (L1) Downline */}
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                        <HiOutlineUserGroup className="text-indigo-500 text-lg" />
-                        <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-                            Direct Downline Referrals ({user.direct_referrals.length})
-                        </h2>
-                    </div>
+            <div className="bg-foreground border p-4 rounded-md mb-4">
+                <div className="flex items-center gap-2 mb-4">
+                    <HiOutlineUserGroup className="text-secondary text-lg" />
+                    <h2 className="text-base font-semibold">
+                        Direct Downline Referrals ({user.direct_referrals.length})
+                    </h2>
                 </div>
 
                 {user.direct_referrals.length > 0 ? (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
-                            <thead>
-                                <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400">
-                                    <th className="py-2.5">Member</th>
-                                    <th className="py-2.5">Code</th>
-                                    <th className="py-2.5">Tier</th>
-                                    <th className="py-2.5">Balance</th>
-                                    <th className="py-2.5">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {user.direct_referrals.map((ref) => (
-                                    <tr key={ref.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                        <td className="py-2.5 font-bold text-slate-900 dark:text-white">{ref.name}</td>
-                                        <td className="py-2.5 font-mono text-slate-500">{ref.user_code}</td>
-                                        <td className="py-2.5">
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800">
-                                                {ref.tier_level}
-                                            </span>
-                                        </td>
-                                        <td className="py-2.5 font-bold text-emerald-600">৳ {ref.available_balance.toFixed(2)}</td>
-                                        <td className="py-2.5">
-                                            <Link href={`/users/${ref.id}`} className="text-indigo-600 font-bold hover:underline">
-                                                Inspect →
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table tableStyle="border" className="mb-0">
+                        <TableHeader items={["Member", "Code", "Tier", "Balance", "Action"]} />
+                        <Tbody className="bg-white dark:bg-background">
+                            {user.direct_referrals.map((ref) => (
+                                <Tr key={ref.id}>
+                                    <Td className="font-semibold text-xs">{ref.name}</Td>
+                                    <Td className="font-mono text-xs text-gray-500">{ref.user_code}</Td>
+                                    <Td className="font-semibold text-xs">{ref.tier_level}</Td>
+                                    <Td className="font-bold text-xs text-secondary">৳ {ref.available_balance.toFixed(2)}</Td>
+                                    <Td className="text-right">
+                                        <Button
+                                            size="sm"
+                                            variant="primary"
+                                            styleType="outline"
+                                            onClick={() => router.visit(`/users/${ref.id}`)}
+                                        >
+                                            View Profile
+                                        </Button>
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
                 ) : (
-                    <p className="text-xs text-slate-400 py-4 text-center">No direct referrals yet.</p>
+                    <p className="text-xs text-gray-400 py-4 text-center">No direct referrals yet.</p>
                 )}
             </div>
 
             {/* Transactions History */}
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="bg-foreground border p-4 rounded-md">
                 <div className="flex items-center gap-2 mb-4">
-                    <MdOutlineAccountBalanceWallet className="text-emerald-500 text-lg" />
-                    <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
+                    <MdOutlineAccountBalanceWallet className="text-secondary text-lg" />
+                    <h2 className="text-base font-semibold">
                         Recent Ledger Transactions
                     </h2>
                 </div>
@@ -160,20 +144,20 @@ export default function UserShow({ user }: UserDetailProps) {
                 <div className="space-y-2.5">
                     {user.transactions && user.transactions.length > 0 ? (
                         user.transactions.map((tx) => (
-                            <div key={tx.id} className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between text-xs">
+                            <div key={tx.id} className="p-3 rounded-md border bg-background flex items-center justify-between text-xs">
                                 <div>
-                                    <p className="font-bold text-slate-900 dark:text-white">{tx.title}</p>
-                                    <p className="text-[11px] text-slate-500">{tx.subtitle || tx.type}</p>
+                                    <p className="font-semibold">{tx.title}</p>
+                                    <p className="text-[11px] text-gray-400">{tx.subtitle || tx.type}</p>
                                 </div>
                                 <div className="text-right">
-                                    <span className={`font-black ${tx.is_positive ? 'text-emerald-600' : 'text-slate-900 dark:text-white'}`}>
+                                    <span className={`font-bold ${tx.is_positive ? 'text-secondary' : ''}`}>
                                         {tx.is_positive ? '+ ' : '- '} ৳ {tx.amount.toFixed(2)}
                                     </span>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <p className="text-xs text-slate-400 py-4 text-center">No transactions recorded yet.</p>
+                        <p className="text-xs text-gray-400 py-4 text-center">No transactions recorded yet.</p>
                     )}
                 </div>
             </div>
