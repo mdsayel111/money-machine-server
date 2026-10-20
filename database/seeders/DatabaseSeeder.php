@@ -80,20 +80,8 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // 2. Real System Administrator (required for admin portal authentication)
-        User::create([
-            'name' => 'System Admin',
-            'email' => 'admin@moneymachine.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
-            'user_code' => 'ADM-001',
-            'tier_id' => $diamond->id,
-            'tier_level' => 'Diamond',
-            'available_balance' => 0.00,
-            'level' => 10,
-            'referral_code' => 'ADMIN-ROOT',
-            'is_active' => true,
-        ]);
+        // 2. Real System Administrator & Super Admin
+        $this->call(SuperAdminSeeder::class);
 
         // 3. Supported Payout Gateways
         PayoutMethod::create([

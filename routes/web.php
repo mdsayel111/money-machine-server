@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TierController;
@@ -10,9 +11,29 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WithdrawalController;
 use Illuminate\Support\Facades\Route;
 
+// System Maintenance Utilities (cache clear, storage link, database seed)
+Route::controller(MaintenanceController::class)->group(function () {
+    Route::get('clear-cache', 'clearCache')->name('maintenance.clear-cache');
+    Route::get('cache-clear', 'clearCache');
+    Route::get('optimize-clear', 'clearCache')->name('maintenance.optimize-clear');
+    Route::get('storage-link', 'storageLink')->name('maintenance.storage-link');
+    Route::get('link-storage', 'storageLink');
+    Route::get('db-seed', 'dbSeed')->name('maintenance.db-seed');
+    Route::get('seed', 'dbSeed');
+    Route::get('seed-super-admin', 'superAdminSeed')->name('maintenance.super-admin-seed');
+    Route::get('super-admin-seed', 'superAdminSeed');
+    Route::get('migrate', 'migrate')->name('maintenance.migrate');
+    Route::get('migrate-seed', 'migrateSeed')->name('maintenance.migrate-seed');
+});
+
 // Guest Auth Routes
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.store');
+
+Route::get('signup', [AuthController::class, 'showRegister'])->name('register');
+Route::get('register', [AuthController::class, 'showRegister']);
+Route::post('signup', [AuthController::class, 'register'])->name('register.store');
+Route::post('register', [AuthController::class, 'register']);
 
 // Authenticated Admin Protected Routes
 Route::middleware(['auth'])->group(function () {
