@@ -15,8 +15,8 @@ return new class extends Migration
             $table->string('subtitle')->nullable();
             $table->decimal('amount', 12, 2);
             $table->boolean('is_positive')->default(true);
-            $table->enum('type', ['task', 'referral', 'withdrawal', 'bonus'])->default('task');
-            $table->enum('status', ['pending', 'completed', 'failed'])->default('completed');
+            $table->string('type', 50)->default('task');
+            $table->string('status', 50)->default('completed');
             $table->string('reference_type')->nullable(); // e.g. task_submission, withdrawal_request, tier_upgrade
             $table->unsignedBigInteger('reference_id')->nullable();
             $table->timestamps();

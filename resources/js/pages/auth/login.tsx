@@ -7,7 +7,7 @@ import { Button, Input } from 'notation-ui';
 export default function SignIn() {
     const { data, setData, post, processing } = useForm({
         email: 'admin@moneymachine.com',
-        password: 'password123',
+        password: 'admin123',
     });
 
     const handleLogin = (e?: React.FormEvent) => {

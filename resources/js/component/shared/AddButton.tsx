@@ -12,7 +12,7 @@ export default function AddButton({
     return (
         <Button
             variant="primary"
-            styleType="filled"
+            styleType="solid"
             className="flex items-center gap-2 bg-[#00C076] hover:bg-[#009E60] text-white border-none shadow-sm text-xs font-bold py-2 px-4 rounded-xl cursor-pointer transition-all"
             onClick={onClick}
         >
