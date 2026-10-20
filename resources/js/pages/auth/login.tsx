@@ -6,8 +6,8 @@ import { Button, Input } from 'notation-ui';
 
 export default function SignIn() {
     const { data, setData, post, processing } = useForm({
-        email: 'admin@moneymachine.com',
-        password: 'admin123',
+        email: '',
+        password: '',
     });
 
     const handleLogin = (e?: React.FormEvent) => {
@@ -129,12 +129,6 @@ export default function SignIn() {
                                 />
                             </Button>
                         </form>
-
-                        <div className="mt-8 rounded-md bg-secondary/10 p-3.5 border border-secondary/20 text-xs">
-                            <p className="font-bold text-secondary">Demo Admin Credentials:</p>
-                            <p className="mt-1 text-[11px] text-gray-500">Email: <code className="font-mono bg-foreground border px-1 py-0.5 rounded-md">admin@moneymachine.com</code></p>
-                            <p className="text-[11px] text-gray-500">Password: <code className="font-mono bg-foreground border px-1 py-0.5 rounded-md">password123</code></p>
-                        </div>
                     </div>
                 </section>
             </div>

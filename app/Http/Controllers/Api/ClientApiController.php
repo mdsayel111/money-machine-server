@@ -46,10 +46,8 @@ class ClientApiController extends Controller
             }
         }
 
-        // Fallback demo user
-        return User::where('user_code', 'ERN-1024')
-            ->orWhere('email', 'rahat.chowdhury@email.com')
-            ->first() ?? User::where('role', 'user')->first();
+        // Fallback user if token/header is absent
+        return User::where('role', 'user')->first() ?? User::first();
     }
 
     /**
@@ -113,7 +111,7 @@ class ClientApiController extends Controller
                 'referral_code' => $newUserRefCode,
                 'referred_by_id' => $sponsor ? $sponsor->id : null,
                 'tasks_completed_count' => 0,
-                'avatar_url' => '/avatars/rahat.jpg',
+                'avatar_url' => null,
                 'is_active' => true,
             ]);
 
@@ -264,7 +262,7 @@ class ClientApiController extends Controller
             'email' => $user->email,
             'phone' => $user->phone ?? '',
             'greeting' => 'GOOD MORNING,',
-            'avatarUrl' => $user->avatar_url ?: '/avatars/rahat.jpg',
+            'avatarUrl' => $user->avatar_url,
             'tier' => $user->tier_level,
             'availableBalance' => (float) $user->available_balance,
             'todayEarnings' => (float) $user->today_earnings,
@@ -274,7 +272,7 @@ class ClientApiController extends Controller
             'lifetimeEarnings' => (float) $user->lifetime_earnings,
             'directUsersCount' => $directCount,
             'networkUsersCount' => $totalNetworkCount,
-            'referralCode' => $user->referral_code ?? 'EARN-99X-BD',
+            'referralCode' => $user->referral_code ?? '',
             'tasksCompletedCount' => $user->tasks_completed_count,
             'invitedCount' => $totalNetworkCount,
         ]);
@@ -357,7 +355,7 @@ class ClientApiController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone ?? '',
-                'avatarUrl' => $user->avatar_url ?: '/avatars/rahat.jpg',
+                'avatarUrl' => $user->avatar_url,
                 'tier' => $user->tier_level,
                 'availableBalance' => (float) $user->available_balance,
                 'todayEarnings' => (float) $user->today_earnings,
@@ -367,7 +365,7 @@ class ClientApiController extends Controller
                 'lifetimeEarnings' => (float) $user->lifetime_earnings,
                 'directUsersCount' => $directCount,
                 'networkUsersCount' => $totalNetworkCount,
-                'referralCode' => $user->referral_code ?? 'EARN-99X-BD',
+                'referralCode' => $user->referral_code ?? '',
                 'tasksCompletedCount' => $user->tasks_completed_count,
                 'invitedCount' => $totalNetworkCount,
             ],
@@ -599,7 +597,7 @@ class ClientApiController extends Controller
                 return [
                     'id' => "act-{$act->id}",
                     'userName' => $act->actor ? $act->actor->name : 'Network Member',
-                    'userAvatar' => $act->actor ? ($act->actor->avatar_url ?: '/avatars/tanvir.jpg') : '/avatars/tanvir.jpg',
+                    'userAvatar' => $act->actor ? $act->actor->avatar_url : null,
                     'action' => $act->action,
                     'timeAgo' => $act->created_at->diffForHumans(),
                     'timestamp' => $act->created_at->toISOString(),
@@ -608,23 +606,6 @@ class ClientApiController extends Controller
                     'amount' => $act->amount ? (float) $act->amount : null,
                     'amountPrefix' => $act->amount_prefix,
                     'isPositive' => (bool) $act->is_positive,
-                ];
-            });
-        } elseif ($directMembers->isNotEmpty()) {
-            $avatars = ['/avatars/tanvir.jpg', '/avatars/sumaiya.jpg', '/avatars/kamal.jpg', '/avatars/nusrat.jpg'];
-            $activities = $directMembers->take(6)->values()->map(function ($member, $idx) use ($avatars) {
-                return [
-                    'id' => "act-live-{$member->id}",
-                    'userName' => $member->name,
-                    'userAvatar' => $member->avatar_url ?: $avatars[$idx % count($avatars)],
-                    'action' => 'joined your L1 referral network',
-                    'timeAgo' => $member->created_at ? $member->created_at->diffForHumans() : 'Recently',
-                    'timestamp' => $member->created_at ? $member->created_at->toISOString() : now()->toISOString(),
-                    'badgeText' => 'L1 DIRECT',
-                    'badgeType' => 'new',
-                    'amount' => 25.00,
-                    'amountPrefix' => '+ ',
-                    'isPositive' => true,
                 ];
             });
         } else {
@@ -637,7 +618,7 @@ class ClientApiController extends Controller
                 'id' => $user->user_code ?? "ERN-{$user->id}",
                 'name' => 'YOU',
                 'code' => 'ID: ' . ($user->user_code ?? "ERN-{$user->id}"),
-                'avatarUrl' => $user->avatar_url ?: '/avatars/rahat.jpg',
+                'avatarUrl' => $user->avatar_url,
                 'tier' => $user->tier_level,
                 'isCurrentUser' => true,
                 'level' => 0,
@@ -648,7 +629,7 @@ class ClientApiController extends Controller
                     'id' => $m->user_code ?? "ERN-{$m->id}",
                     'name' => $m->name,
                     'code' => 'ID: ' . ($m->user_code ?? "ERN-{$m->id}"),
-                    'avatarUrl' => $m->avatar_url ?: '/avatars/tanvir.jpg',
+                    'avatarUrl' => $m->avatar_url,
                     'tier' => $m->tier_level,
                     'l2Count' => $subCount,
                     'level' => 1,
@@ -660,16 +641,16 @@ class ClientApiController extends Controller
                     'id' => $m->user_code ?? "ERN-{$m->id}",
                     'name' => $m->name,
                     'referredBy' => $parent ? explode(' ', $parent->name)[0] : 'Member',
-                    'avatarUrl' => $m->avatar_url ?: '/avatars/sumaiya.jpg',
+                    'avatarUrl' => $m->avatar_url,
                     'tier' => $m->tier_level,
                     'level' => 2,
                 ];
             })->values(),
             'networkHealth' => [
-                'activeMembers' => $networkCount > 0 ? $networkCount : 1,
+                'activeMembers' => $networkCount,
                 'totalMembers' => $networkCount,
-                'growthMtdPercent' => 15.4,
-                'commissionTaka' => 4250,
+                'growthMtdPercent' => 0.0,
+                'commissionTaka' => (float) WalletTransaction::where('user_id', $user->id)->where('type', 'referral')->sum('amount'),
             ],
         ];
 
@@ -678,8 +659,8 @@ class ClientApiController extends Controller
                 'directCount' => $directCount,
                 'networkCount' => $networkCount,
                 'totalEarnings' => (float) WalletTransaction::where('user_id', $user->id)->where('type', 'referral')->sum('amount'),
-                'weeklyCommissions' => (float) WalletTransaction::where('user_id', $user->id)->where('type', 'referral')->where('created_at', '>=', now()->subDays(7))->sum('amount') ?: 1840.0,
-                'referralCode' => $user->referral_code ?? 'EARN-99X-BD',
+                'weeklyCommissions' => (float) WalletTransaction::where('user_id', $user->id)->where('type', 'referral')->where('created_at', '>=', now()->subDays(7))->sum('amount'),
+                'referralCode' => $user->referral_code ?? '',
             ],
             'commissionLevels' => $commissionLevels,
             'activities' => $activities,
@@ -839,8 +820,6 @@ class ClientApiController extends Controller
         $depositSum = (float) WalletTransaction::where('user_id', $user->id)->where('type', 'deposit')->sum('amount');
         $withdrawalSum = (float) WithdrawalRequest::where('user_id', $user->id)->where('status', 'completed')->sum('amount');
 
-        $isDemoSponsor = $user->user_code === 'ERN-1024';
-
         // Recent withdrawal requests
         $withdrawalRequests = WithdrawalRequest::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
@@ -867,11 +846,11 @@ class ClientApiController extends Controller
             'pendingRewards' => (float) $user->pending_rewards,
             'lifetimeEarnings' => (float) $user->lifetime_earnings,
             'breakdown' => [
-                'taskEarnings' => $taskSum > 0 ? $taskSum : ($isDemoSponsor ? 4200.0 : 0.0),
-                'directReferrals' => $referralSum > 0 ? $referralSum : ($isDemoSponsor ? 1840.0 : 0.0),
-                'networkBonus' => $bonusSum > 0 ? $bonusSum : ($isDemoSponsor ? 5210.0 : 0.0),
+                'taskEarnings' => $taskSum,
+                'directReferrals' => $referralSum,
+                'networkBonus' => $bonusSum,
                 'depositSum' => $depositSum,
-                'otherRewards' => $isDemoSponsor ? 1200.0 : 0.0,
+                'otherRewards' => 0.0,
                 'totalWithdrawn' => $withdrawalSum,
             ],
             'transactions' => $transactions,
